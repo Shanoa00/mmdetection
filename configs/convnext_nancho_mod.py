@@ -17,7 +17,6 @@ ver como agregar special metrics
 """
 #Test
 
-
 # The new config inherits a base config to highlight the necessary modification
 _base_ = 'convnext/cascade_mask_rcnn_convnext-t_p4_w7_fpn_giou_4conv1f_fp16_ms-crop_3x_coco.py'  #'cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_1x_coco.py' #cascade_rcnn/cascade_rcnn_r50_caffe_fpn_1x_coco.py
 
