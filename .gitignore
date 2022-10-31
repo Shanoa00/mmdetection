@@ -127,3 +127,25 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#data/
+#data
+.vscode
+.idea
+.DS_Store
+
+# custom
+# *.pkl
+# *.pkl.json
+# *.log.json
+docs/modelzoo_statistics.md
+mmdet/.mim
+#work_dirs/
+
+# Pytorch
+*.pth
+*.py~
+*.sh~
+*.png
+*.jpg
+*.jpeg
