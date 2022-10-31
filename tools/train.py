@@ -216,6 +216,7 @@ def main():
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]
+    print("AAAA:", (datasets))
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)
         val_dataset.pipeline = cfg.data.train.pipeline
@@ -228,6 +229,7 @@ def main():
             CLASSES=datasets[0].CLASSES)
     # add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
+    print('Classes', model.CLASSES)
     train_detector(
         model,
         datasets,

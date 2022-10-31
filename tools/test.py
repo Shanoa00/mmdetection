@@ -65,7 +65,7 @@ def parse_args():
     parser.add_argument(
         '--show-score-thr',
         type=float,
-        default=0.3,
+        default=0.3, #0.3
         help='score threshold (default: 0.3)')
     parser.add_argument(
         '--gpu-collect',
@@ -212,9 +212,12 @@ def main():
         mmcv.mkdir_or_exist(osp.abspath(args.work_dir))
         timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
         json_file = osp.join(args.work_dir, f'eval_{timestamp}.json')
+        #print('aaaa',json_file)
 
     # build the dataloader
     dataset = build_dataset(cfg.data.test)
+    # print("cc", cfg.data.test)
+    #print("aaaa", dataset)
     data_loader = build_dataloader(dataset, **test_loader_cfg)
 
     # build the model and load checkpoint
@@ -237,12 +240,14 @@ def main():
         model = build_dp(model, cfg.device, device_ids=cfg.gpu_ids)
         outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
                                   args.show_score_thr)
+        #print('vv',outputs)
     else:
         model = build_ddp(
             model,
             cfg.device,
             device_ids=[int(os.environ['LOCAL_RANK'])],
             broadcast_buffers=False)
+        #print("Aquiiii")
         outputs = multi_gpu_test(
             model, data_loader, args.tmpdir, args.gpu_collect
             or cfg.evaluation.get('gpu_collect', False))
@@ -250,13 +255,17 @@ def main():
     rank, _ = get_dist_info()
     if rank == 0:
         if args.out:
-            print(f'\nwriting results to {args.out}')
+            # dataset_iter = next(iter(data_loader))
+            # print(len(dataset_iter))
+            # print(dataset_iter)
+            # print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
         kwargs = {} if args.eval_options is None else args.eval_options
         if args.format_only:
             dataset.format_results(outputs, **kwargs)
         if args.eval:
             eval_kwargs = cfg.get('evaluation', {}).copy()
+            #print("AAAAAA",eval_kwargs)
             # hard-code way to remove EvalHook args
             for key in [
                     'interval', 'tmpdir', 'start', 'gpu_collect', 'save_best',

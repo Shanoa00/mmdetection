@@ -334,16 +334,17 @@ class CustomDataset(Dataset):
             metric = metric[0]
         allowed_metrics = ['mAP', 'recall']
         if metric not in allowed_metrics:
-            raise KeyError(f'metric {metric} is not supported')
+            raise KeyError(f'metric {metric} is not supported!')
         annotations = [self.get_ann_info(i) for i in range(len(self))]
         eval_results = OrderedDict()
         iou_thrs = [iou_thr] if isinstance(iou_thr, float) else iou_thr
         if metric == 'mAP':
             assert isinstance(iou_thrs, list)
             mean_aps = []
+            rresults = []
             for iou_thr in iou_thrs:
                 print_log(f'\n{"-" * 15}iou_thr: {iou_thr}{"-" * 15}')
-                mean_ap, _ = eval_map(
+                mean_ap, rresult = eval_map(
                     results,
                     annotations,
                     scale_ranges=scale_ranges,
@@ -351,6 +352,8 @@ class CustomDataset(Dataset):
                     dataset=self.CLASSES,
                     logger=logger)
                 mean_aps.append(mean_ap)
+                rresults.append(rresult)
+                print(rresults)
                 eval_results[f'AP{int(iou_thr * 100):02d}'] = round(mean_ap, 3)
             eval_results['mAP'] = sum(mean_aps) / len(mean_aps)
         elif metric == 'recall':

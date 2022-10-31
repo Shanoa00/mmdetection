@@ -147,6 +147,7 @@ def train_detector(model,
     }
 
     data_loaders = [build_dataloader(ds, **train_loader_cfg) for ds in dataset]
+    print("AAAA:", len(data_loaders))
 
     # put model on gpus
     if distributed:
