@@ -36,8 +36,12 @@ def iter_target_crops(bboxes, w, h, size):
         lt_region = np.array([x2 - size, y2 - size, x1, y1])
         lt_region[0::2] = lt_region[0::2].clip(0, w - size)
         lt_region[1::2] = lt_region[1::2].clip(0, h - size)
-        assert (lt_region[2] >= lt_region[0]) and \
-                (lt_region[3] >= lt_region[1])
+        try:
+            assert (lt_region[2] >= lt_region[0]) and \
+                    (lt_region[3] >= lt_region[1])
+        except Exception as e:
+            print('--------')
+            print("Error!!!")
 
         # make a crop
         x = np.random.randint(lt_region[0], lt_region[2] + 1)
@@ -60,19 +64,20 @@ def crop_gt(bboxes, labels, x1, y1, x2, y2):
     ret_bboxes[:, 1::2] = ret_bboxes[:, 1::2].clip(0, y2 - y1)
     return ret_bboxes, ret_labels
 
-data_folder= 'kuzushiji_morpho2_section/' # 'Nancho_dataset/',  'kuzushiji/'
-
+data_folder=  'HanDataset/'  #'S05_Detection&Recognition', # 'Nancho_dataset/',  'kuzushiji/'
+imgs_folder= 'train_images/'  #train_images, S05_img
+imgs_out= 'train_crops2/'
 #def main():
 def crop_data(file,output):
     random.seed(0)
     np.random.seed(0)
     dtrainval = mmcv.load('../data/'+data_folder+file)
     dtrainval_crop = []
-    SIZE = 1024
-    LABEL_DUMMY = 4788
-    crops = []
+    SIZE = 1024 #1240, 1024
+    LABEL_DUMMY = 1100 #4788
+    # crops = []
     for sample in tqdm(dtrainval):
-        img = mmcv.imread('../data/'+data_folder+'train_images/' + sample['filename'])
+        img = mmcv.imread('../data/'+data_folder+imgs_folder + sample['filename']) 
         w, h = sample['width'], sample['height']
         bboxes = sample['ann']['bboxes']
         labels = sample['ann']['labels']
@@ -86,10 +91,10 @@ def crop_data(file,output):
                 labels_crop = np.array([LABEL_DUMMY], np.int64)
 
                 filename = '{}_{}.png'.format(base_name, idx_crop)
-                mmcv.imwrite(
-                    img_crop,
-                    '../data/'+data_folder+'train_crops1/' + filename,
-                    auto_mkdir=True)
+                # mmcv.imwrite(
+                #     img_crop,
+                #     '../data/'+data_folder+imgs_out + filename,
+                #     auto_mkdir=True)
                 dtrainval_crop.append({
                     'filename': filename,
                     'width': SIZE,
@@ -108,6 +113,7 @@ def crop_data(file,output):
                 idx_crop += 1
 
         else:
+            # print(base_name)
             for x1, y1, x2, y2 in iter_target_crops(bboxes, w, h, SIZE):
                 img_crop = img[y1:y2, x1:x2]
                 bboxes_crop, labels_crop = \
@@ -116,7 +122,7 @@ def crop_data(file,output):
                 filename = '{}_{}.png'.format(base_name, idx_crop)
                 mmcv.imwrite(
                     img_crop,
-                    '../data/'+data_folder+'train_crops1/' + filename,
+                    '../data/'+data_folder+imgs_out + filename,
                     auto_mkdir=True)
                 dtrainval_crop.append({
                     'filename': filename,
@@ -142,4 +148,4 @@ def crop_data(file,output):
 
 
 if __name__ == "__main__":
-    crop_data('dtrain.pkl', 'dtrain_crop.pkl')
+    crop_data('dtrain.pkl', 'dtrain_crop2.pkl')

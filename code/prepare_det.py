@@ -5,6 +5,7 @@ from pathlib import Path
 from PIL import Image
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+import os
 
 
 def iter_bboxes(labels):
@@ -17,20 +18,30 @@ def iter_bboxes(labels):
         ch, x, y, w, h = labels[i:i + 5]
         yield int(x), int(y), int(w), int(h), ch
 
-data_folder= 'kuzushiji_morpho2_section/'  #'Nancho_dataset/', 'kuzushiji/'
+def renames():
+    os.rename('../data/'+data_folder+'R01-1_img','../data/'+data_folder+'train_images')
+    os.rename('../data/'+data_folder+'All_data_train.csv','../data/'+data_folder+'train.csv')
+    
+data_folder= 'HanDataset/' # 'S05_Detection&Recognition', 'kuzushiji_morpho2_section/'  #'Nancho_dataset/', 'kuzushiji/'
+
+unicode_translation = pd.read_csv('../data/'+data_folder+'unicode_translation.csv')
+unicode2class = dict(
+    zip(unicode_translation['Unicode'], unicode_translation.index.values))
+
 
 def prepare_train():
-    df = pd.read_csv('../data/'+data_folder+'train.csv', keep_default_na=False)
-    img_dir = Path('../data/'+data_folder+'train_images')
+    df = pd.read_csv('../data/'+data_folder+'train2.csv', keep_default_na=False)
+    img_dir = Path('../data/'+data_folder+'train_images') #'S05_img', 'train_images'
 
-    unicode_translation = pd.read_csv('../data/'+data_folder+'unicode_translation.csv')
-    unicode2class = dict(
-        zip(unicode_translation['Unicode'], unicode_translation.index.values))
 
     # Add images to COCO
     images = []
     for img_id, row in tqdm(df.iterrows()):
         filename = row['image_id'] + '.jpg'
+        # try:
+        #     img = Image.open(img_dir / filename)
+        # except Exception as e:
+        #     filename= '0' + row['image_id'] + '.jpg'
         img = Image.open(img_dir / filename)
         image = {
             'filename': filename,
@@ -50,9 +61,11 @@ def prepare_train():
             'labels_ignore': np.array([], dtype=np.int64).reshape(-1, )
         }
         images.append(image)
-
+    
+    # print("aaa", labels)
+    
     import random
-    train, val = train_test_split(images, test_size=0.119)
+    train, val = train_test_split(images, test_size=0.2) #test_size=0.119, 0.2
     print('All ', len(images))
     print('train ', len(train))
     print('val ', len(val))
@@ -61,10 +74,12 @@ def prepare_train():
     #mmcv.dump([im for im in images if im['filename'].startswith('umgy')], '../data/dval.pkl')
     #mmcv.dump([im for im in images if not im['filename'].startswith('umgy')], '../data/dtrain.pkl')
 
+
+###########
     mmcv.dump(val, '../data/'+data_folder+'dval.pkl')
     mmcv.dump(train, '../data/'+data_folder+'dtrain.pkl')
     mmcv.dump(images, '../data/'+data_folder+'dtrainval.pkl')
-
+##########
 
 def prepare_test():
     df = pd.read_csv('../data/'+data_folder+'sample_submission.csv', keep_default_na=False)
@@ -110,9 +125,14 @@ def prepare_test():
         }
         images.append(image)
     print('test ', len(images))
+    #########
     mmcv.dump(images, '../data/'+data_folder+'dtest.pkl')
 
 
 if __name__ == "__main__":
+    try:
+        renames()
+    except Exception:
+        pass
     prepare_train()
     prepare_test()
