@@ -36,12 +36,12 @@ def iter_target_crops(bboxes, w, h, size):
         lt_region = np.array([x2 - size, y2 - size, x1, y1])
         lt_region[0::2] = lt_region[0::2].clip(0, w - size)
         lt_region[1::2] = lt_region[1::2].clip(0, h - size)
-        try:
-            assert (lt_region[2] >= lt_region[0]) and \
-                    (lt_region[3] >= lt_region[1])
-        except Exception as e:
-            print('--------')
-            print("Error!!!")
+        # try:
+        assert (lt_region[2] >= lt_region[0]) and \
+                (lt_region[3] >= lt_region[1])
+        # except Exception as e:
+        #     print('--------')
+        #     print("Error!!!")
 
         # make a crop
         x = np.random.randint(lt_region[0], lt_region[2] + 1)
@@ -64,7 +64,7 @@ def crop_gt(bboxes, labels, x1, y1, x2, y2):
     ret_bboxes[:, 1::2] = ret_bboxes[:, 1::2].clip(0, y2 - y1)
     return ret_bboxes, ret_labels
 
-data_folder=  'HanDataset/'  #'S05_Detection&Recognition', # 'Nancho_dataset/',  'kuzushiji/'
+data_folder=  'S05_Detection&Recognition/'  #'S05_Detection&Recognition', # 'Nancho_dataset/',  'kuzushiji/'
 imgs_folder= 'train_images/'  #train_images, S05_img
 imgs_out= 'train_crops2/'
 #def main():
@@ -83,6 +83,7 @@ def crop_data(file,output):
         labels = sample['ann']['labels']
         idx_crop = 0
         base_name = sample['filename'].rstrip('.jpg')
+        # print(base_name)
         if len(bboxes) == 0:
             for x1, y1, x2, y2 in iter_empty_crops(w, h, SIZE - 64, SIZE):
                 img_crop = img[y1:y2, x1:x2]

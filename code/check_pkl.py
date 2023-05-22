@@ -2,7 +2,7 @@ import pickle
 from mmdet.apis import inference_detector, init_detector, show_result_pyplot, set_random_seed, train_detector
 import itertools
 
-data_folder= 'HanDataset/' #'S05_Detection&Recognition', 'Nancho_dataset/',  kuzushiji
+data_folder= 'R01-2_Detection&Recognition/' #'HanDataset/', 'Nancho_dataset/',  kuzushiji
 # classes_file= True
 
 def unique(list1):

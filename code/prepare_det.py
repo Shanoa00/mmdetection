@@ -22,7 +22,7 @@ def renames():
     os.rename('../data/'+data_folder+'R01-1_img','../data/'+data_folder+'train_images')
     os.rename('../data/'+data_folder+'All_data_train.csv','../data/'+data_folder+'train.csv')
     
-data_folder= 'HanDataset/' # 'S05_Detection&Recognition', 'kuzushiji_morpho2_section/'  #'Nancho_dataset/', 'kuzushiji/'
+data_folder= 'R01-1_Detection&Recognition/' # 'S05_Detection&Recognition', 'kuzushiji_morpho2_section/'  #'Nancho_dataset/', 'kuzushiji/'
 
 unicode_translation = pd.read_csv('../data/'+data_folder+'unicode_translation.csv')
 unicode2class = dict(
@@ -30,7 +30,7 @@ unicode2class = dict(
 
 
 def prepare_train():
-    df = pd.read_csv('../data/'+data_folder+'train2.csv', keep_default_na=False)
+    df = pd.read_csv('../data/'+data_folder+'train.csv', keep_default_na=False)
     img_dir = Path('../data/'+data_folder+'train_images') #'S05_img', 'train_images'
 
 
